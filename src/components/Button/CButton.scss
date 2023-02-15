@@ -1,0 +1,15 @@
+button {
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  background: #5b61fe;
+  filter: drop-shadow(0 0 3px #5b61fe) drop-shadow(0 0 3px #5b61fe);
+  color: #fff;
+  padding: 8px;
+  border-radius: 5px;
+  font-size: 22px;
+  transition: 0.4s;
+}
+button:hover {
+  background: #5b61fe;
+}

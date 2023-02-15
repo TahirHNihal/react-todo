@@ -1,0 +1,14 @@
+{
+  "todos": [
+    {
+      "task": "Do Assignment",
+      "status": "completed",
+      "id": 3
+    },
+    {
+      "task": "Instagram assignment done",
+      "status": "pending",
+      "id": 6
+    }
+  ]
+}
