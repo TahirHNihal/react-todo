@@ -13,13 +13,11 @@ export class TodoApp extends Component {
       input: {
         task: "",
         status: "pending",
-
       },
-      completedTask: [],
-      pendingTask: [],
-      showStatusTodos: "all",
+      showStatusTodos: "",
     };
   }
+  //Handle Input Change
   handleInputChange = (e) => {
     this.setState((prevState) => ({
       ...prevState,
@@ -44,7 +42,7 @@ export class TodoApp extends Component {
             todos: [...prevState.todos, this.state.input],
             input: {
               task: "",
-              status: "",
+              status: "pending",
             },
           }));
         })
@@ -86,7 +84,6 @@ export class TodoApp extends Component {
   };
 
   //handleComplete
-
   handleComplete = (id) => {
     axios.get(`http://localhost:5050/todos/${id}`).then((res) => {
       try {
@@ -101,7 +98,7 @@ export class TodoApp extends Component {
 
     this.componentDidMount();
   };
-
+  //Component Did mount
   componentDidMount = () => {
     axios
       .get("http://localhost:5050/todos")
@@ -115,64 +112,56 @@ export class TodoApp extends Component {
         console.log(err.message);
       });
   };
-  //
-  handleAllTaskList = () => {
-    this.state.showStatusTodos = "all";
-    axios
-      .get("http://localhost:5050/todos")
-      .then((res) => {
-        this.setState((prevState) => ({
-          ...prevState,
-          todos: [...res.data],
-        }));
-      })
-      .catch((err) => {
-        console.log(err.message);
-      });
-    this.componentDidMount();
+
+  // Handle Pending Task List
+  handleStatusChangeBtn = (e) => {
+    console.log(e.target.value);
+    this.handleTodoByStatus(e.target.value);
   };
-  //Handle Complete Task List
-  handleComepleteTaskList = () => {
-    console.log(this.state.showStatusTodos);
-    this.state.showStatusTodos = "completed";
-    console.log(this.state.showStatusTodos);
-    axios
-      .get("http://localhost:5050/todos/")
-      .then((res) => {
-        this.setState((prevState) => ({
-          ...prevState,
-          completedTask: [
-            ...prevState.todos.filter((data) => data.status === "completed"),
-          ],
-        }));
-      })
-      .catch((err) => {
-        console.log(err.message);
-      });
-    this.componentDidMount();
-  };
-  //Handle Pending Task List
-  handlePendingTaskList = () => {
-    this.state.showStatusTodos = "pending";
-    console.log(this.state.showStatusTodos);
-    axios
-      .get("http://localhost:5050/todos/")
-      .then((res) => {
-        this.setState((prevState) => ({
-          ...prevState,
-          pendingTask: [
-            ...prevState.todos.filter((data) => data.status === "pending"),
-          ],
-        }));
-      })
-      .catch((err) => {
-        console.log(err.message);
-      });
-    this.componentDidMount();
+
+  //Handle Todos By Status
+  handleTodoByStatus = (showStatusTodos) => {
+    if (showStatusTodos === "completed") {
+      axios
+        .get("http://localhost:5050/todos?status=completed")
+        .then((res) => {
+          this.setState((prevState) => ({
+            ...prevState,
+            todos: [...res.data],
+          }));
+        })
+        .catch((err) => {
+          console.log(err.message);
+        });
+    } else if (showStatusTodos === "pending") {
+      axios
+        .get("http://localhost:5050/todos?status=pending")
+        .then((res) => {
+          this.setState((prevState) => ({
+            ...prevState,
+            todos: [...res.data],
+          }));
+        })
+        .catch((err) => {
+          console.log(err.message);
+        });
+    } else {
+      axios
+        .get("http://localhost:5050/todos")
+        .then((res) => {
+          this.setState((prevState) => ({
+            ...prevState,
+            todos: [...res.data],
+          }));
+        })
+        .catch((err) => {
+          console.log(err.message);
+        });
+    }
   };
 
   render() {
-    const { todos, input, completedTask, pendingTask } = this.state;
+    const { todos, input } = this.state;
     return (
       <>
         <div className="todo-app-wrapper">
@@ -203,170 +192,80 @@ export class TodoApp extends Component {
                 <div className="todo-task-menu">
                   <ul>
                     <li>
-                      <button onClick={this.handleAllTaskList}>All</button>
+                      <button onClick={this.handleStatusChangeBtn} value="all">
+                        All
+                      </button>
                     </li>
                     <li>
-                      <button onClick={this.handlePendingTaskList}>
+                      <button
+                        onClick={this.handleStatusChangeBtn}
+                        value="pending"
+                      >
                         pending
                       </button>
                     </li>
                     <li>
-                      <button onClick={this.handleComepleteTaskList}>
+                      <button
+                        onClick={this.handleStatusChangeBtn}
+                        value="completed"
+                      >
                         Complete
                       </button>
                     </li>
                   </ul>
                   <hr className="divider" />
                 </div>
-                <>
-                  <div className="todo-task-list">
-                    <ul>
-                      {this.showStatusTodos === "all" ? console.log(true) : console.log(false)}
+                <div className="todo-task-list">
+                  <ul>
+                    {todos &&
+                      todos.map((item, index) => {
+                        let textThrough = "none";
+                        if (item.status === "completed") {
+                          textThrough = "line-through";
+                        } else {
+                          textThrough = "none";
+                        }
 
-                      {todos &&
-                        todos.map((item, index) => {
-                          let textThrough = "none";
-                          if (item.status === "completed") {
-                            textThrough = "line-through";
-                          } else {
-                            textThrough = "none";
-                          }
-
-                          return (
-                            <li key={index}>
-                              <div className="tasklist-wrapper">
-                                <div className="task-name">
-                                  <button
-                                    onClick={() => this.handleComplete(item.id)}
-                                  >
-                                    <i class="bx bx-check"></i>
-                                  </button>
-                                  <h4 style={{ textDecoration: textThrough }}>
-                                    {item.task}
-                                  </h4>
-                                </div>
-                                <div className="task-action">
-                                  <ul>
-                                    <li>
-                                      <button>
-                                        <i class="bx bxs-edit-alt"></i>
-                                      </button>
-                                    </li>
-                                    <li>
-                                      <button
-                                        onClick={() =>
-                                          this.handleDeleteTask(item.id)
-                                        }
-                                      >
-                                        <i class="bx bxs-trash-alt"></i>
-                                      </button>
-                                    </li>
-                                  </ul>
-                                </div>
+                        return (
+                          <li
+                            handleTodoByStatus={this.handleTodoByStatus}
+                            key={index}
+                          >
+                            <div className="tasklist-wrapper">
+                              <div className="task-name">
+                                <button
+                                  onClick={() => this.handleComplete(item.id)}
+                                >
+                                  <i class="bx bx-check"></i>
+                                </button>
+                                <h4 style={{ textDecoration: textThrough }}>
+                                  {item.task}
+                                </h4>
                               </div>
-                            </li>
-                          );
-                        })}
-                    </ul>
-                  </div>
-                  <h5>Complete</h5>
-                  <hr className="divider" />
-                  <div className="todo-task-list">
-                    <ul>
-                      {completedTask &&
-                        completedTask.map((item, index) => {
-                          let textThrough = "none";
-                          if (item.status === "completed") {
-                            textThrough = "line-through";
-                          } else {
-                            textThrough = "none";
-                          }
-
-                          return (
-                            <li key={index}>
-                              <div className="tasklist-wrapper">
-                                <div className="task-name">
-                                  <button
-                                    onClick={() => this.handleComplete(item.id)}
-                                  >
-                                    <i class="bx bx-check"></i>
-                                  </button>
-                                  <h4 style={{ textDecoration: textThrough }}>
-                                    {item.task}
-                                  </h4>
-                                </div>
-                                <div className="task-action">
-                                  <ul>
-                                    <li>
-                                      <button>
-                                        <i class="bx bxs-edit-alt"></i>
-                                      </button>
-                                    </li>
-                                    <li>
-                                      <button
-                                        onClick={() =>
-                                          this.handleDeleteTask(item.id)
-                                        }
-                                      >
-                                        <i class="bx bxs-trash-alt"></i>
-                                      </button>
-                                    </li>
-                                  </ul>
-                                </div>
+                              <div className="task-action">
+                                <ul>
+                                  <li>
+                                    <button>
+                                      <i class="bx bxs-edit-alt"></i>
+                                    </button>
+                                  </li>
+                                  <li>
+                                    <button
+                                      onClick={() =>
+                                        this.handleDeleteTask(item.id)
+                                      }
+                                    >
+                                      <i class="bx bxs-trash-alt"></i>
+                                    </button>
+                                  </li>
+                                </ul>
                               </div>
-                            </li>
-                          );
-                        })}
-                    </ul>
-                  </div>
-                  <h5>Pending</h5>
-                  <hr className="divider" />
-                  <div className="todo-task-list">
-                    <ul>
-                      {pendingTask &&
-                        pendingTask.map((item, index) => {
-                          // let textThrough = "none";
-                          // if (item.status === "completed") {
-                          //   textThrough = "line-through";
-                          // } else {
-                          //   textThrough = "none";
-                          // }
-                          return (
-                            <li key={index}>
-                              <div className="tasklist-wrapper">
-                                <div className="task-name">
-                                  <button
-                                    onClick={() => this.handleComplete(item.id)}
-                                  >
-                                    <i class="bx bx-check"></i>
-                                  </button>
-                                  <h4>{item.task}</h4>
-                                </div>
-                                <div className="task-action">
-                                  <ul>
-                                    <li>
-                                      <button>
-                                        <i class="bx bxs-edit-alt"></i>
-                                      </button>
-                                    </li>
-                                    <li>
-                                      <button
-                                        onClick={() =>
-                                          this.handleDeleteTask(item.id)
-                                        }
-                                      >
-                                        <i class="bx bxs-trash-alt"></i>
-                                      </button>
-                                    </li>
-                                  </ul>
-                                </div>
-                              </div>
-                            </li>
-                          );
-                        })}
-                    </ul>
-                  </div>
-                </>
+                            </div>
+                          </li>
+                        );
+                      })}
+                  </ul>
+                </div>
               </div>
             </div>
           </div>

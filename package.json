@@ -21,7 +21,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "server": "json-server --watch api/todolist.json --port 5050"
+    "server": "json-server --watch api/todolist.json --port 5000"
   },
   "eslintConfig": {
     "extends": [

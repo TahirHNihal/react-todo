@@ -1,14 +1,19 @@
 {
   "todos": [
     {
-      "task": "Do Assignment",
+      "task": "Instagram assignment done",
       "status": "completed",
-      "id": 3
+      "id": 1
     },
     {
-      "task": "Instagram assignment done",
+      "task": "Make todo app",
+      "status": "completed",
+      "id": 2
+    },
+    {
+      "task": "Complete All Project",
       "status": "pending",
-      "id": 6
+      "id": 4
     }
   ]
 }
